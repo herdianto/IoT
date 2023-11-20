@@ -1,52 +1,141 @@
-#include <Preferences.h>
-#define pinLED D1
-#define pinButton D2
+#include <Preferences.h> //preference to store GPIO state
+#include <ESP8266WiFi.h> //wifi connection
+#include <PubSubClient.h> //mqtt connection
+
+#define MSG_BUFFER_SIZE	(50)
+#define relay1 D1
+#define relay2 D4
 
 Preferences pref;
+WiFiClient espClient;
+PubSubClient client(espClient);
+PubSubClient client_2(espClient);
 
-int buttonState;
-// Relay State
-bool toggleState_1 = LOW; //Define integer to remember the toggle state for relay 1
-bool toggleState_2 = LOW; //Define integer to remember the toggle state for relay 2
+const char* ssid = "HERDI_WIFI_Plus";
+const char* password = "HerdiWifi123";
+const char* mqtt_server = "test.mosquitto.org";
+const char* mqtt_server_2 = "broker.hivemq.com";
 
-void getRelayState(){
-  toggleState_1 = pref.getBool("Relay1", 0);
-  digitalWrite(pinLED, toggleState_1); 
-}
+unsigned long lastMsg = 0;
+char msg[MSG_BUFFER_SIZE];
+int value = 0;
+bool state_relay1 = LOW; //Define integer to remember the toggle state for relay 1
+bool state_relay2 = LOW; //Define integer to remember the toggle state for relay 2
 
 void setup() {
   Serial.begin(9600);
+  setup_wifi();
   pref.begin("Relay_State", false);
-  pinMode(pinLED, OUTPUT);
-  //pinMode(pinButton, INPUT);
-  pinMode(pinButton, INPUT_PULLUP);
+
+  client.setServer(mqtt_server, 1883);
+  client.setCallback(callback);
+  client.setServer(mqtt_server_2, 1883);
+  client.setCallback(callback);
+
+  pinMode(relay1, OUTPUT);
+  pinMode(relay2, OUTPUT);
+
+  getRelayState(); // Get the last state of Relays
 }
 
 void loop() {
-  buttonState = digitalRead(pinButton);
-  //Serial.println(buttonState);
-  if(!buttonState){
-    digitalWrite(pinLED, LOW);
-    Serial.println("LED OFF");
-  }else{
-    digitalWrite(pinLED, HIGH);
-    Serial.println("LED ON");
+  if (!client.connected()) {
+    reconnect();
   }
-  /*
-  if(!buttonState && !oldButton){e:\Download\Code_NodeMCU_Blynk2_Pref_4Relay_IR_DHT11\Code_NodeMCU_Blynk2_Pref_4Relay_IR_DHT11_Switch\Code_NodeMCU_Blynk2_Pref_4Relay_IR_DHT11_Switch.ino
-    if(state == 0){
-        digitalWrite(pinLED, HIGH);
-        Serial.println("LED ON");
-        state = 1;
-      }else{
-        digitalWrite(pinLED, LOW);
-        Serial.println("LED OFF");
-        state = 0;
-      }
-      oldButton = 1;
-    }else if(buttonState && oldButton){
-      oldButton = 0;
+  if (!client_2.connected()) {
+    reconnect();
+  }
+  client.loop();
+  client_2.loop();
+
+  unsigned long now = millis();
+  if (now - lastMsg > 2000) {
+    lastMsg = now;
+    value = 32; // should be from sensor
+    snprintf (msg, MSG_BUFFER_SIZE, "Temperature is :%ld", value);
+    Serial.print("Publish message: ");
+    Serial.println(msg);
+    client.publish("herdi/device/temp", msg);
+  }
+}
+
+void getRelayState(){
+  state_relay1 = pref.getBool("Relay1", 0);
+  digitalWrite(relay1, state_relay1); 
+  delay(200);
+  state_relay2 = pref.getBool("Relay2", 0);
+  digitalWrite(relay2, state_relay2); 
+}
+
+void setup_wifi() {
+  delay(10);
+  // We start by connecting to a WiFi network
+  Serial.println();
+  Serial.print("Connecting to ");
+  Serial.println(ssid);
+
+  WiFi.mode(WIFI_STA);
+  WiFi.begin(ssid, password);
+
+    while (WiFi.status() != WL_CONNECTED) {
+      delay(500);
+      Serial.print(".");
+    }
+
+  randomSeed(micros());
+
+  Serial.println("");
+  Serial.println("WiFi connected");
+  Serial.println("IP address: ");
+  Serial.println(WiFi.localIP());
+}
+
+void reconnect() {
+  // Loop until we're reconnected
+  while (!client.connected()) {
+    Serial.print("Attempting MQTT connection...");
+    // Create a random client ID
+    String clientId = "ESP8266Client-";
+    clientId += String(random(0xffff), HEX);
+    // Attempt to connect
+    if (client.connect(clientId.c_str())) {
+      Serial.println("connected");
+      // Once connected, publish an announcement...
+      client.publish("herdi/device/temp", "MQTT Server is Connected");
+      // ... and resubscribe
+      client.subscribe("herdi/device/led");
+    } else {
+      Serial.print("failed, rc=");
+      Serial.print(client.state());
+      Serial.println(" try again in 5 seconds");
+      // Wait 5 seconds before retrying
+      delay(5000);
     }
   }
-  */
+}
+
+void callback(char* topic, byte* payload, unsigned int length) {
+  Serial.print("Message arrived [");
+  Serial.print(topic);
+  Serial.print("] ");
+  for (int i = 0; i < length; i++) {
+    Serial.print((char)payload[i]);
+  }
+  Serial.println();
+
+  // Switch on the LED if an 1 was received as first character
+  if ((char)payload[0] == '1') {
+    digitalWrite(relay1, LOW);   // Turn the LED on (Note that LOW is the voltage level
+    // but actually the LED is on; this is because
+    // it is active low on the ESP-01)
+    digitalWrite(relay2, HIGH);
+    pref.putBool("Relay1", LOW);
+    pref.putBool("Relay2", HIGH);
+  } else {
+    digitalWrite(relay1, HIGH); 
+    pref.putBool("Relay1", HIGH);
+    digitalWrite(relay2, LOW); 
+    pref.putBool("relay2", LOW);
+  }
+
 }
