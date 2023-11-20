@@ -3,7 +3,7 @@
   Complete project details at http://randomnerdtutorials.com  
 *********/
 
-int pin = 2;
+int pin = 4;
 
 void setup() {
   // initialize GPIO 2 as an output.
@@ -16,4 +16,3 @@ void loop() {
   delay(3000);               // wait for a second
   digitalWrite(pin, LOW);    // turn the LED off by making the voltage LOW
   delay(3000);               // wait for a second
-}
