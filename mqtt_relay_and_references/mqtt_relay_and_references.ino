@@ -1,10 +1,23 @@
+/*
+references:
+DHT11: https://www.youtube.com/watch?v=nLP6ArkNoO0
+MQTT: https://www.youtube.com/watch?v=c1st5cVRRzo
+*/
+
 #include <Preferences.h> //preference to store GPIO state
 #include <ESP8266WiFi.h> //wifi connection
 #include <PubSubClient.h> //mqtt connection
+#include <DHT.h> //temp and humidity library
 
 #define MSG_BUFFER_SIZE	(50)
+#define DTYPE DHT11 
+
 #define relay1 D1
 #define relay2 D4
+#define tempSensor D2
+ 
+
+DHT dht(tempSensor,DTYPE);
 
 Preferences pref;
 WiFiClient espClient;
@@ -19,7 +32,6 @@ const char* mqtt_server_2 = "broker.hivemq.com";
 
 unsigned long lastMsg = 0;
 char msg[MSG_BUFFER_SIZE];
-int value = 0;
 bool state_relay1 = LOW; //Define integer to remember the toggle state for relay 1
 bool state_relay2 = LOW; //Define integer to remember the toggle state for relay 2
 
@@ -28,6 +40,8 @@ void setup() {
 
   pinMode(relay1, OUTPUT);
   pinMode(relay2, OUTPUT);
+
+  dht.begin();
 
   setup_wifi();
 
@@ -52,14 +66,19 @@ void loop() {
   client_2.loop();
 
   unsigned long now = millis();
-  if (now - lastMsg > 2000) {
+  if (now - lastMsg > 5000) {
     lastMsg = now;
-    value = 32; // should be from sensor
-    //snprintf (msg, MSG_BUFFER_SIZE, "Temperature is :%ld", value);
-    //Serial.print("Publish message: ");
-    //Serial.println(msg);
-    //client.publish("herdi/device/temp", "mosquitto");
-    //client_2.publish("herdi_2/device/temp", "hivemq");
+    float tc = dht.readTemperature(false);  //Read temperature in C
+    float tf = dht.readTemperature(true);   //Read Temperature in F
+    float hu = dht.readHumidity();  //Read humidity
+    String cel,fah,hum;
+    cel = String(tc);
+    fah = String(tf);
+    hum = String(hu);
+    snprintf (msg, MSG_BUFFER_SIZE, "Temperature is :%sC %sF. Humidity is:%s", cel,fah,hum);
+    Serial.println(msg);
+    client.publish("herdi/device/temp", msg);
+    client_2.publish("herdi_2/device/temp", msg);
   }
 }
 
