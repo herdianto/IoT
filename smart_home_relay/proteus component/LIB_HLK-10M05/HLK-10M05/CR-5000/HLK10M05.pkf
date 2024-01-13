@@ -1,0 +1,10 @@
+(unit MM)
+
+(package "HLK10M05"
+    (type UNDEF)
+    (uver 2)
+    (mountForm default
+        (footprintRef "HLK10M05")
+        (spec "default")
+    )
+)

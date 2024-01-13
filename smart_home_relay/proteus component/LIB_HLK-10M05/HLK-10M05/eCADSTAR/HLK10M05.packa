@@ -1,0 +1,13 @@
+(unit MM)
+
+(package "HLK-10M05"
+    (type UNDEF)
+    (uver 2)
+    (cuser "SamacSys")
+    (uuser "SamacSys")
+    (utime 2023-06-22-10:55:41)
+    (mountForm default
+        (footprintRef "HLK10M05")
+        (spec "System")
+    )
+)

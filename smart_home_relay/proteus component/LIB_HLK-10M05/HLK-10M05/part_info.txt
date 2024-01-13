@@ -1,0 +1,9 @@
+Manufacturer=Hi-Link
+PartNumber=HLK-10M05
+PartCategory=Power Supply
+PackageCategory=Other
+PinCount=4
+Version=1.1
+Released=2019-10-20 15:14:32
+Downloaded=2024-01-02 06:07:15
+3D=Y

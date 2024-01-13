@@ -1,0 +1,121 @@
+;Proteus Design Interchange Format
+(PDIF
+ (vendor "SamacSys Limited")
+ (version 1 0)
+ (library
+  (part "HLK-10M05"
+   (description "Power Module AC-DC Through Hole RoHS")
+   (family "ANA")
+   (package "HLK10M05")
+   (attribute "Datasheet Link" "https://datasheet.lcsc.com/szlcsc/1909111105_HI-LINK-HLK-10M05_C403745.pdf")
+   (attribute "Geometry.Height" "21.8mm")
+   (attribute "Manufacturer_Name" "Hi-Link")
+   (attribute "Manufacturer_Part_Number" "HLK-10M05")
+   (attribute "Mouser Part Number" "")
+   (attribute "Mouser Price/Stock" "")
+   (attribute "Arrow Part Number" "")
+   (attribute "Arrow Price/Stock" "")
+   (gate
+    (symbol "HLK-10M05")
+    (pin "AC_1" 1 PS)
+    (pin "AC_2" 2 PS)
+    (pin "-V0" 3 PS)
+    (pin "+V0" 4 PS)
+   )
+  )
+  (symbol "HLK-10M05"
+   (units THOU)
+   (origin (pt 0 0))
+   (graphic
+    (stroke 10)
+    (path (pt 200 100) (pt 900 100) (pt 900 -200) (pt 200 -200) (pt 200 100) (closed))
+   )
+   (terminal
+    (body (symbol "PIN") (pt 0 0) (rot 0) (mir 0) (visible true))
+    (name (pt 230 0) (rot 0) (just MIDDLE LEFT) (visible true))
+    (number (pt 140 20) (rot 0) (just BOTTOM RIGHT) (visible true)))
+   (terminal
+    (body (symbol "PIN") (pt 0 -100) (rot 0) (mir 0) (visible true))
+    (name (pt 230 0) (rot 0) (just MIDDLE LEFT) (visible true))
+    (number (pt 140 20) (rot 0) (just BOTTOM RIGHT) (visible true)))
+   (terminal
+    (body (symbol "PIN") (pt 1100 0) (rot 0) (mir X) (visible true))
+    (name (pt 230 0) (rot 0) (just MIDDLE LEFT) (visible true))
+    (number (pt 140 20) (rot 0) (just BOTTOM RIGHT) (visible true)))
+   (terminal
+    (body (symbol "PIN") (pt 1100 -100) (rot 0) (mir X) (visible true))
+    (name (pt 230 0) (rot 0) (just MIDDLE LEFT) (visible true))
+    (number (pt 140 20) (rot 0) (just BOTTOM RIGHT) (visible true)))
+  )
+  (symbol "PIN"
+   (units THOU)
+   (origin (pt 0 0))
+   (graphic
+    (stroke 10)
+    (path (pt 0 0) (pt 200 0))))
+  (symbol "PINSHORT"
+   (units THOU)
+   (origin (pt 0 0))
+   (graphic
+    (stroke 10)
+    (path (pt 0 0) (pt 100 0))))
+  (package "HLK10M05"
+   (units MM)
+   (layer TASM
+    (graphic
+     (stroke 0.2)
+     (path
+      (closed true)
+      (pt -2.2 10)
+      (pt 44.7 10)
+      (pt 44.7 -17.8)
+      (pt -2.2 -17.8)
+      (pt -2.2 10))))
+   (layer TSLK
+    (graphic
+     (stroke 0.1)
+     (path
+      (closed true)
+      (pt -2.2 10)
+      (pt 44.7 10)
+      (pt 44.7 -17.8)
+      (pt -2.2 -17.8)
+      (pt -2.2 10))))
+   (layer OCCA
+    (graphic
+     (stroke 0.1)
+     (path
+      (closed true)
+      (pt -3.3 10.5)
+      (pt 45.2 10.5)
+      (pt 45.2 -18.3)
+      (pt -3.3 -18.3)
+      (pt -3.3 10.5))))
+   (layer TSLK
+    (graphic
+     (stroke 0.2)
+     (path
+      (closed true)
+      (pt -2.7 0.1)
+      (arc (pt -2.700 0.100) (pt -2.800 -0.100) (pt -2.600 0.100) (start 180.0) (sweep 90.0))
+      (pt -2.7 -0.1)
+      (arc (pt -2.700 -0.100) (pt -2.800 -0.100) (pt -2.600 0.100) (start 180.0) (sweep -90.0))
+      (pt -2.7 0.1))))
+   (leg 1 (pt 0.000 0.000) (padstack 0))
+   (leg 2 (pt 0.000 -7.800) (padstack 0))
+   (leg 3 (pt 42.500 7.500) (padstack 0))
+   (leg 4 (pt 42.500 -15.300) (padstack 0))
+   (padstack 0
+    (hole 1)
+    (plated true)
+    (pad (layer TCOP) (round 1.500))
+    (pad (layer INNER) (round 1.500))
+    (pad (layer BCOP) (round 1.500))
+   )
+   (model "HLK-10M05.stp"
+    (euler 90 0 0)
+    (offset 21.219999313354492 -3.9000000953674316 11)
+   )
+  )
+ )
+)
